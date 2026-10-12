@@ -10,7 +10,7 @@ pipeline {
         stage('Git Clone') {
             steps {
                 echo 'Git Clone'
-                git url: 'https://github.com/sjh4616/spring-petclinic.git',
+                git url: 'https://github.com/dlwnsgur6889-pixel/spring-petclinic.git',
                 branch: 'main'
             }
         }
@@ -28,9 +28,9 @@ pipeline {
                 sshPublisher(publishers: [sshPublisherDesc(configName: 'target', 
                 transfers: [sshTransfer(cleanRemote: false, excludes: '', 
                 execCommand: '''
-                fuser -k 8080/tcp
-                export BUILD_ID=Spring-PetClinic
-                nohup java -jar /home/ubuntu/spring-petclinic-4.0.0-SNAPSHOT.jar >> nohup.out 2>&1 &
+                docker rmi -f &(docker ps -aq)
+                docekr rmi -f $(docker images -q)
+                docker run -itd -p 80:8080 --name=spring-petclinic s4616/spring-petclinic:lates
                 ''', 
                 execTimeout: 120000, 
                 flatten: false, 
