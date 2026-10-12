@@ -25,7 +25,7 @@ pipeline {
             }
         }
         //Docker Image 생성
-        stage 'Docker Image Create') {
+        stage ('Docker Image Create') {
             steps {
                 echo 'Docker Image Create'
                 sh '''
