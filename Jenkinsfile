@@ -39,7 +39,7 @@ pipeline {
             steps {
                 echo 'Docker Images Push'
                 // Docker Login
-                sh 'eco ${DOCKERHUB_CRED_PSW} | docker login -u ${DOCKERHUB_CRED_USR} --password-studin
+                sh 'echo ${DOCKERHUB_CRED_PSW} | docker login -u ${DOCKERHUB_CRED_USR} --password-studin'
 
                 //Docker Hub Push
                 sh 'docker image push krljh/spring-petclinic:latest'
