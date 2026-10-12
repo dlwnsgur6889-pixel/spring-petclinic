@@ -5,7 +5,7 @@ pipeline {
         maven 'M3'
     }
     environment {
-            DOCKERHUB_CRED = credentials('dockerCredentials')
+        DOCKERHUB_CRED = credentials('dockerCredentials')
     }
 
     stages {
@@ -17,6 +17,13 @@ pipeline {
                 branch: 'main'
             }
         }
+        // Maven을 이용한 Build
+        stage('Maven Build') {
+            steps {
+                echo 'Maven Build'
+                sh 'mvn -Dmaven.test.failure.ignore=true clean package'
+            }
+        }
         //Docker Image 생성
         stage 'Docker Image Create') {
             steps {
@@ -25,6 +32,7 @@ pipeline {
                 docker butld -t spring-petclinic:${BUILD_NUMBER} .
                 docker tag spring-petclininc:${BUILD_NUMBER} krljh/spring-petclinic:latest
                 '''
+            }
         }
         //Dockerhub Image Push
         stage('Docker Image Push') {
@@ -46,13 +54,7 @@ pipeline {
             }
         }
         //Docker Image 삭제
-        // Maven을 이용한 Build
-        stage('Maven Build') {
-            steps {
-                echo 'Maven Build'
-                sh 'mvn -Dmaven.test.failure.ignore=true clean package'
-            }
-        }
+        
         // SSH를 이용한 실행파일 전송
         stage('SSH Publish') {
             steps {
@@ -60,9 +62,9 @@ pipeline {
                 sshPublisher(publishers: [sshPublisherDesc(configName: 'target', 
                 transfers: [sshTransfer(cleanRemote: false, excludes: '', 
                 execCommand: '''
-                docker rmi -f &(docker ps -aq)
+                docker rmi -f $(docker ps -aq)
                 docekr rmi -f $(docker images -q)
-                docker run -itd -p 80:8080 --name=spring-petclinic s4616/spring-petclinic:latest
+                docker run -itd -p 80:8080 --name=spring-petclinic krljh/spring-petclinic:latest
                 ''', 
                 execTimeout: 120000, 
                 flatten: false, 
